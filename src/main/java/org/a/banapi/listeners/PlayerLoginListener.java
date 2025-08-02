@@ -2,12 +2,14 @@ package org.a.banapi.listeners;
 
 import org.a.banapi.Banapi;
 import org.a.banapi.api.APIService;
+import org.a.banapi.api.PublicAPIService;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -16,56 +18,107 @@ import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * 处理玩家登录事件的监听器
+ */
 public class PlayerLoginListener implements Listener {
     private final Banapi plugin;
     private final APIService apiService;
+    private final PublicAPIService publicAPIService;
     private final Logger logger;
 
-    public PlayerLoginListener(Banapi plugin, APIService apiService) {
+    public PlayerLoginListener(Banapi plugin, APIService apiService, PublicAPIService publicAPIService) {
         this.plugin = plugin;
         this.apiService = apiService;
+        this.publicAPIService = publicAPIService;
         this.logger = Logger.getLogger("BanAPI");
     }
 
     @EventHandler
     public void onPlayerLogin(PlayerLoginEvent event) {
         String playerName = event.getPlayer().getName();
+        InetAddress address = event.getAddress();
+        String ip = address.getHostAddress();
 
+        // 检查ID是否包含禁止关键词
         if (playerName.toLowerCase().contains("api")) {
             event.disallow(Result.KICK_OTHER, "§c您的游戏ID包含禁止使用的关键词 'API'\n§7请更换其他游戏ID后再尝试登录");
             return;
         }
 
         try {
+            // 检查本地封禁API
             List<Map<String, Object>> banList = apiService.getBans();
             Map<String, Object> banInfo = findPlayerBan(banList, playerName);
 
-            if (banInfo == null) {
-                event.allow();
-                return;
+            if (banInfo != null) {
+                if (!isBanValid(banInfo)) {
+                    event.disallow(Result.KICK_BANNED, "§c无法验证您的封禁状态\n§7请联系管理员");
+                    return;
+                }
+
+                if (!isBanReleased(banInfo)) {
+                    String banMessage = buildBanMessage(banInfo);
+                    event.disallow(Result.KICK_BANNED, banMessage);
+
+                    // 广播封禁消息
+                    if (plugin.getConfigManager().isBanBroadcastEnabled()) {
+                        broadcastBanMessage(playerName, banInfo);
+                    }
+                    return;
+                }
             }
 
-            if (!isBanValid(banInfo)) {
-                event.disallow(Result.KICK_BANNED, "§c无法验证您的封禁状态\n§7请联系管理员");
-                return;
-            }
-
-            if (isBanReleased(banInfo)) {
-                event.allow();
-                return;
-            }
-
-            String banMessage = buildBanMessage(banInfo);
-            event.disallow(Result.KICK_BANNED, banMessage);
-
-            // 广播封禁消息
-            if (plugin.getConfigManager().isBanBroadcastEnabled()) {
-                broadcastBanMessage(playerName, banInfo);
-            }
+            // 检查公共封禁API
+            checkPublicBanAPI(event, playerName, ip);
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "处理玩家登录时出错", e);
             event.allow();
+        }
+    }
+    
+    /**
+     * 检查玩家是否在公共封禁API中
+     * @param event 登录事件
+     * @param playerName 玩家名称
+     * @param ip 玩家IP
+     */
+    private void checkPublicBanAPI(PlayerLoginEvent event, String playerName, String ip) {
+        try {
+            // 异步检查，避免阻塞主线程
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                try {
+                    // 检查玩家名称
+                    Map<String, Object> playerBanInfo = publicAPIService.checkPlayerBan(playerName);
+                    if (playerBanInfo != null) {
+                        // 记录警告日志
+                        publicAPIService.logWarning(playerName, ip, playerBanInfo);
+                        
+                        // 通知在线OP
+                        publicAPIService.notifyOps(playerName, playerBanInfo);
+                    }
+                    
+                    // 检查IP地址
+                    Map<String, Object> ipBanInfo = publicAPIService.checkIpBan(ip);
+                    if (ipBanInfo != null && playerBanInfo == null) { // 避免重复通知
+                        // 记录警告日志
+                        publicAPIService.logWarning(playerName, ip, ipBanInfo);
+                        
+                        // 通知在线OP
+                        publicAPIService.notifyOps(playerName, ipBanInfo);
+                    }
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, "检查公共封禁API时出错", e);
+                }
+            });
+            
+            // 允许玩家登录，因为公共API只是警告不阻止
+            event.allow();
+            
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "处理公共封禁API检查时出错", e);
+            event.allow(); // 出错时允许登录
         }
     }
 

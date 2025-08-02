@@ -68,6 +68,34 @@ public class ConfigManager {
             "§c▶ §f封禁ID: §7#{id}\n\n" +
             "§7如有异议，请联系管理员或在官网申诉");
     }
+    
+    /**
+     * 检查是否启用公共API
+     * @return 是否启用公共API
+     */
+    public boolean isPublicApiEnabled() {
+        return getNestedConfig("public-api.enabled", true);
+    }
+    
+    /**
+     * 获取公共API警告消息格式
+     * @return 警告消息格式字符串
+     */
+    public String getPublicApiWarningFormat() {
+        return getNestedConfig("public-api.warning-format", 
+            "§c[BanAPI预警] §e玩家 {nickname} §c在公共封禁列表中\n" +
+            "§7IP: §f{ip}\n" +
+            "§7原因: §f{reason}\n" +
+            "§7封禁时间: §f{timestamp}");
+    }
+    
+    /**
+     * 检查是否记录警告日志
+     * @return 是否记录警告日志
+     */
+    public boolean isLogWarningsEnabled() {
+        return getNestedConfig("public-api.log-warnings", true);
+    }
 
     // 辅助方法：获取嵌套配置值
     @SuppressWarnings("unchecked")

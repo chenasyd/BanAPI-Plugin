@@ -1,9 +1,11 @@
 org\a\banapi\api\APIService$1.class
-org\a\banapi\commands\BanAPICommand.class
 org\a\banapi\tasks\BanUpdateTask.class
 org\a\banapi\commands\GetAPICommand.class
 org\a\banapi\Banapi.class
 org\a\banapi\api\APIService$2.class
+org\a\banapi\commands\BanAPICommand.class
+org\a\banapi\api\PublicAPIService.class
+org\a\banapi\commands\PublicBanCommand.class
 org\a\banapi\api\APIService.class
 org\a\banapi\listeners\PlayerLoginListener.class
 org\a\banapi\config\ConfigManager.class

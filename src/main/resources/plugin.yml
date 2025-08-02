@@ -12,6 +12,10 @@ commands:
     description: 管理BanAPI的封禁记录
     usage: /banapi [list|stats|ban|release]
     permission: banapi.admin
+  publicban:
+    description: 查询公共封禁API的信息
+    usage: /publicban [list|stats|check|checkip]
+    permission: banapi.publicban
 
 permissions:
   banapi.getapi:
@@ -19,4 +23,10 @@ permissions:
     default: op
   banapi.admin:
     description: 允许管理BanAPI的封禁记录
+    default: op
+  banapi.publicban:
+    description: 允许查询公共封禁API的信息
+    default: op
+  banapi.alerts:
+    description: 允许接收公共封禁API的警告消息
     default: op
