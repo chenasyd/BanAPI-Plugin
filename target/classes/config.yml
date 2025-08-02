@@ -1,0 +1,34 @@
+# BanAPI 插件配置
+api:
+  url: "http://localhost:5000"
+  key: "bans-api-secret-key-12345"
+
+# 自动更新设置 (秒)
+update-interval: 60
+
+# 封禁广播配置
+broadcast:
+  enabled: true
+  format: "§c[封禁公告] 玩家 §e{nickname} §c已被管理员 §e{admin} §c封禁\n§7原因: §f{reason}\n§7累计封禁数: §f{total}"
+
+# 封禁消息配置
+ban-message:
+  # 玩家被封禁时看到的消息
+  format: |
+    §4§l您已被服务器封禁!
+    §c▶ §f原因: §e{reason}
+    §c▶ §f管理员: §e{admin}
+    §c▶ §f封禁时间: §e{startTime}
+    §c▶ §f封禁类型: §e{banType}
+    §c▶ §f解封时间: §e{endTime}
+    §c▶ §f封禁ID: §7#{id}
+    
+    §7如有异议，请前往discord.gg/7ugMu3WDNb
+    §7或填写申诉表单https://docs.qq.com/form/page/DVVdpU3dvT1FoeVZG
+  #{id} - 封禁记录ID
+  # {reason} - 封禁原因
+  #{admin} - 执行封禁的管理员
+  #{startTime} - 封禁开始时间
+  #{endTime} - 封禁结束时间
+  #{banType} - 封禁类型（永久/临时）
+  #{isPermanent} - 是否永久封禁
