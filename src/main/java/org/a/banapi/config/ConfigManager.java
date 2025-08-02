@@ -96,6 +96,22 @@ public class ConfigManager {
     public boolean isLogWarningsEnabled() {
         return getNestedConfig("public-api.log-warnings", true);
     }
+    
+    /**
+     * 检查是否启用BungeeCord支持
+     * @return 是否启用BungeeCord支持
+     */
+    public boolean isBungeeEnabled() {
+        return getNestedConfig("bungee.enabled", false);
+    }
+    
+    /**
+     * 获取BungeeCord通道名称
+     * @return BungeeCord通道名称
+     */
+    public String getBungeeChannel() {
+        return getNestedConfig("bungee.channel", "BungeeCord");
+    }
 
     // 辅助方法：获取嵌套配置值
     @SuppressWarnings("unchecked")

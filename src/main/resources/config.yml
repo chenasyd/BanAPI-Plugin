@@ -3,6 +3,13 @@ api:
   url: "http://localhost:5000"
   key: "bans-api-secret-key-12345"
 
+# BungeeCord支持配置
+bungee:
+  # 是否启用BungeeCord支持
+  enabled: false
+  # BungeeCord通道名称
+  channel: "BungeeCord"
+
 # 公共API配置
 public-api:
   # 是否启用公共API检查

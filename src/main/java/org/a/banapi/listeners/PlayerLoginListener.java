@@ -42,7 +42,15 @@ public class PlayerLoginListener implements Listener {
 
         // 检查ID是否包含禁止关键词
         if (playerName.toLowerCase().contains("api")) {
-            event.disallow(Result.KICK_OTHER, "§c您的游戏ID包含禁止使用的关键词 'API'\n§7请更换其他游戏ID后再尝试登录");
+            if (plugin.getConfigManager().isBungeeEnabled() && plugin.getBungeeMessenger() != null) {
+                // 使用BungeeCord踢出玩家
+                plugin.getBungeeMessenger().kickPlayer(playerName, "§c您的游戏ID包含禁止使用的关键词 'API'\n§7请更换其他游戏ID后再尝试登录");
+                // 允许玩家登录到这个服务器，但会被BungeeCord立即踢出
+                event.allow();
+            } else {
+                // 使用原生方式踢出玩家
+                event.disallow(Result.KICK_OTHER, "§c您的游戏ID包含禁止使用的关键词 'API'\n§7请更换其他游戏ID后再尝试登录");
+            }
             return;
         }
 
@@ -53,13 +61,24 @@ public class PlayerLoginListener implements Listener {
 
             if (banInfo != null) {
                 if (!isBanValid(banInfo)) {
-                    event.disallow(Result.KICK_BANNED, "§c无法验证您的封禁状态\n§7请联系管理员");
+                    if (plugin.getConfigManager().isBungeeEnabled() && plugin.getBungeeMessenger() != null) {
+                        plugin.getBungeeMessenger().kickPlayer(playerName, "§c无法验证您的封禁状态\n§7请联系管理员");
+                        event.allow();
+                    } else {
+                        event.disallow(Result.KICK_BANNED, "§c无法验证您的封禁状态\n§7请联系管理员");
+                    }
                     return;
                 }
 
                 if (!isBanReleased(banInfo)) {
                     String banMessage = buildBanMessage(banInfo);
-                    event.disallow(Result.KICK_BANNED, banMessage);
+                    
+                    if (plugin.getConfigManager().isBungeeEnabled() && plugin.getBungeeMessenger() != null) {
+                        plugin.getBungeeMessenger().kickPlayer(playerName, banMessage);
+                        event.allow();
+                    } else {
+                        event.disallow(Result.KICK_BANNED, banMessage);
+                    }
 
                     // 广播封禁消息
                     if (plugin.getConfigManager().isBanBroadcastEnabled()) {

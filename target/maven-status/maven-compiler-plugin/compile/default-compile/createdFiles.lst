@@ -6,6 +6,7 @@ org\a\banapi\api\APIService$2.class
 org\a\banapi\commands\BanAPICommand.class
 org\a\banapi\api\PublicAPIService.class
 org\a\banapi\commands\PublicBanCommand.class
+org\a\banapi\bungee\BungeeMessenger.class
 org\a\banapi\api\APIService.class
 org\a\banapi\listeners\PlayerLoginListener.class
 org\a\banapi\config\ConfigManager.class

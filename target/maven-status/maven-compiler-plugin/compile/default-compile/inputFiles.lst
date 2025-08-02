@@ -1,6 +1,7 @@
 D:\插件\NDP-Plugin-master\banapi\src\main\java\org\a\banapi\api\APIService.java
 D:\插件\NDP-Plugin-master\banapi\src\main\java\org\a\banapi\api\PublicAPIService.java
 D:\插件\NDP-Plugin-master\banapi\src\main\java\org\a\banapi\Banapi.java
+D:\插件\NDP-Plugin-master\banapi\src\main\java\org\a\banapi\bungee\BungeeMessenger.java
 D:\插件\NDP-Plugin-master\banapi\src\main\java\org\a\banapi\commands\BanAPICommand.java
 D:\插件\NDP-Plugin-master\banapi\src\main\java\org\a\banapi\commands\GetAPICommand.java
 D:\插件\NDP-Plugin-master\banapi\src\main\java\org\a\banapi\commands\PublicBanCommand.java

@@ -2,6 +2,7 @@ package org.a.banapi;
 
 import org.a.banapi.api.APIService;
 import org.a.banapi.api.PublicAPIService;
+import org.a.banapi.bungee.BungeeMessenger;
 import org.a.banapi.commands.BanAPICommand;
 import org.a.banapi.commands.GetAPICommand;
 import org.a.banapi.commands.PublicBanCommand;
@@ -24,6 +25,7 @@ public final class Banapi extends JavaPlugin {
     private APIService apiService;
     private PublicAPIService publicAPIService;
     private BanUpdateTask banUpdateTask;
+    private BungeeMessenger bungeeMessenger;
 
     @Override
     public void onEnable() {
@@ -39,6 +41,12 @@ public final class Banapi extends JavaPlugin {
         // 初始化API服务
         apiService = new APIService(configManager);
         publicAPIService = new PublicAPIService(this);
+        
+        // 初始化BungeeCord支持
+        if (configManager.isBungeeEnabled()) {
+            bungeeMessenger = new BungeeMessenger(this, configManager.getBungeeChannel());
+            getLogger().info("已启用BungeeCord支持");
+        }
 
         // 启动定时任务
         banUpdateTask = new BanUpdateTask(this, apiService);
@@ -87,5 +95,13 @@ public final class Banapi extends JavaPlugin {
      */
     public PublicAPIService getPublicAPIService() {
         return publicAPIService;
+    }
+    
+    /**
+     * 获取BungeeCord消息发送器
+     * @return BungeeCord消息发送器实例，如果未启用BungeeCord支持则返回null
+     */
+    public BungeeMessenger getBungeeMessenger() {
+        return bungeeMessenger;
     }
 }
