@@ -14,3 +14,6 @@ list -显示公共列表
 stats -显示统计信息
 check <玩家名> -检查玩家是否存在于公共封禁列表中
 checkip <ip地址> -检查IP是否存在于公共封禁列表中
+
+banapi-1.2-SNAPSHOT
+增加了bungee的支持
